@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eMesh - Fesztivál Hub & Feladatkezelő</title>
+    <style>
+        /* CSS Változók a Solarpunk/Cyberpunk erdei témához */
+        :root {
+            --olive-leaf: #506831;
+            --ebony: #55543C;
+            --shadow-grey: #28292D;
+            --bright-snow: #FAFAFA;
+            --olive: #938839;
+
+            --bg-dark: var(--shadow-grey);
+            --surface: var(--ebony);
+            --surface-hover: #646247;
+            --primary: var(--olive-leaf);
+            --primary-glow: rgba(80, 104, 49, 0.45);
+            --secondary: var(--olive);
+            --text-main: var(--bright-snow);
+            --text-muted: rgba(250, 250, 250, 0.72);
+            --border-radius: 12px;
+            
+            /* Sürgősségi színek */
+            --urgency-critical: #d96a4e;
+            --urgency-high: var(--olive);
+            --urgency-normal: var(--olive-leaf);
+            --hero-glow: rgba(80, 104, 49, 0.28);
+            --hero-grid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Cg fill='none' stroke='%23FAFAFA' stroke-opacity='0.09' stroke-width='1'%3E%3Cpath d='M0 32H320M0 96H320M0 160H320M0 224H320M0 288H320'/%3E%3Cpath d='M32 0V320M96 0V320M160 0V320M224 0V320M288 0V320'/%3E%3C/g%3E%3Cg fill='%23938839' fill-opacity='0.2'%3E%3Ccircle cx='32' cy='32' r='2.2'/%3E%3Ccircle cx='96' cy='96' r='1.8'/%3E%3Ccircle cx='160' cy='160' r='2.2'/%3E%3Ccircle cx='224' cy='224' r='1.8'/%3E%3Ccircle cx='288' cy='288' r='2.2'/%3E%3C/g%3E%3Cg stroke='%23506831' stroke-opacity='0.35' stroke-width='1.1'%3E%3Cpath d='M32 32L96 96L160 160L224 224L288 288'/%3E%3Cpath d='M288 32L224 96L160 160L96 224L32 288'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(80, 104, 49, 0.14), transparent 35%),
+                linear-gradient(180deg, #202228 0%, var(--bg-dark) 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- LANDING PAGE --- */
+        #landing-page { display: block; }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5rem 1.5rem;
+            min-height: 85vh;
+            background:
+                radial-gradient(circle at center, rgba(40, 41, 45, 0.28), rgba(40, 41, 45, 0.92) 78%),
+                radial-gradient(circle at 20% 20%, rgba(80, 104, 49, 0.22), transparent 28%),
+                radial-gradient(circle at 80% 30%, rgba(147, 136, 57, 0.18), transparent 26%),
+                var(--hero-grid);
+            background-color: var(--bg-dark);
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 10px var(--hero-glow));
+        }
+
+        .hero h1 { font-size: 3.2rem; margin-bottom: 0.5rem; color: var(--text-main); }
+        .hero h1 span { color: var(--secondary); text-shadow: 0 0 15px var(--primary-glow); }
+        .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 650px; margin-bottom: 2.5rem; }
+        
+        .cta-btn {
+            background: linear-gradient(135deg, var(--primary), var(--olive));
+            color: var(--bright-snow);
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 25px rgba(80, 104, 49, 0.6); }
+
+        .section-title { text-align: center; font-size: 2.2rem; margin: 4rem 0 2rem; color: var(--text-main); }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .step-card {
+            background-color: var(--surface);
+            padding: 2.5rem 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border-top: 3px solid var(--secondary);
+            transition: transform 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+        }
+        .step-card:hover { transform: translateY(-5px); background-color: var(--surface-hover); }
+
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background-color: rgba(80, 104, 49, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .step-card h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem; }
+        .step-card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        footer { text-align: center; padding: 3rem 1.5rem; background-color: var(--shadow-grey); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+
+        /* --- APP VIEW --- */
+        #app-view {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--bg-dark);
+            border-left: 1px solid rgba(250, 250, 250, 0.08);
+            border-right: 1px solid rgba(250, 250, 250, 0.08);
+        }
+
+        .app-header {
+            padding: 1rem;
+            background-color: var(--surface);
+            text-align: center;
+            border-bottom: 2px solid var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-header h2 { color: var(--primary); font-size: 1.2rem; }
+        .back-to-landing { color: var(--text-muted); cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+
+        .tab-nav { display: flex; background-color: var(--surface); }
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--secondary);
+            background-color: rgba(147, 136, 57, 0.1);
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: none;
+        }
+        .tab-content.active { display: block; }
+
+        /* Components */
+        .card {
+            background-color: var(--surface);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(250, 250, 250, 0.06);
+        }
+        
+        /* Chat */
+        .chat-container { display: flex; flex-direction: column; height: 100%; }
+        .chat-messages { flex: 1; overflow-y: auto; padding-bottom: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+        .message { max-width: 80%; padding: 0.8rem 1rem; border-radius: 16px; position: relative; }
+        .message.incoming { background-color: var(--surface); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .message.outgoing { background-color: rgba(80, 104, 49, 0.14); border: 1px solid var(--primary-glow); align-self: flex-end; border-bottom-right-radius: 4px; color: var(--secondary); }
+        .message-status { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 0.4rem; font-style: italic; }
+        
+        .chat-input-area { background-color: var(--surface); padding: 1rem; border-radius: var(--border-radius); display: flex; gap: 0.5rem; }
+        .chat-input-area input { flex: 1; background-color: var(--bg-dark); border: 1px solid rgba(250, 250, 250, 0.15); color: var(--text-main); padding: 0.8rem; border-radius: 8px; outline: none; }
+        .chat-input-area input:focus { border-color: var(--primary); }
+        .send-btn { background: linear-gradient(135deg, var(--primary), var(--olive)); color: var(--bright-snow); border: none; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Task Manager */
+        .credits-display { text-align: center; padding: 1.5rem; border-bottom: 1px solid var(--surface); margin-bottom: 1.5rem; }
+        .credits-display h2 { color: var(--primary); font-size: 2.5rem; }
+        .credits-display p { color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+
+        .task-list-title { margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-main); font-size: 1.1rem; border-bottom: 1px solid var(--surface); padding-bottom: 0.5rem; }
+
+        .task-card {
+            background-color: var(--surface);
+            border-left: 4px solid var(--urgency-normal);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: 0.2s ease;
+            border: 1px solid rgba(250, 250, 250, 0.05);
+        }
+        .task-card:hover { background-color: var(--surface-hover); }
+        .task-card.critical { border-left-color: var(--urgency-critical); }
+        .task-card.high { border-left-color: var(--urgency-high); }
+
+        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+        .task-title { font-weight: bold; font-size: 1.1rem; color: var(--text-main); }
+        .task-reward { font-weight: bold; color: var(--secondary); background: rgba(80, 104, 49, 0.12); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+        
+        .task-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        
+        .task-footer { display: flex; justify-content: space-between; align-items: center; }
+        .task-urgency { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+        .urgency-critical { color: var(--urgency-critical); }
+        .urgency-high { color: var(--urgency-high); }
+        .urgency-normal { color: var(--urgency-normal); }
+
+        .task-btn {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid rgba(250, 250, 250, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .task-btn.accept { border-color: var(--secondary); color: var(--secondary); }
+        .task-btn.accept:hover { background-color: var(--secondary); color: #000; }
+        .task-btn.complete { background: linear-gradient(135deg, var(--primary), var(--olive)); border-color: var(--primary); color: var(--bright-snow); }
+        .task-btn.complete:hover { box-shadow: 0 0 10px var(--primary-glow); }
+
+        .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-style: italic; }
+
+        /* Toast / Notification */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--olive));
+            color: var(--bright-snow);
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        #toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- ================= LANDING PAGE ================= -->
+    <div id="landing-page">
+        <section class="hero">
+            <svg class="hero-logo" viewBox="0 0 100 100">
+                <path d="M50 10 L50 90 M20 40 L50 60 L80 40 M30 80 L50 60 L70 80" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="50" cy="10" r="5" fill="var(--primary)"/>
+                <circle cx="20" cy="40" r="4" fill="var(--bg-dark)"/>
+                <circle cx="80" cy="40" r="4" fill="var(--bg-dark)"/>
+                <circle cx="30" cy="80" r="3" fill="var(--primary)"/>
+                <circle cx="70" cy="80" r="3" fill="var(--primary)"/>
+            </svg>
+            <h1>Üdv az <span>eMesh</span>-ben</h1>
+            <p>A fesztivál offline feladatkezelője és hálózata. Csatlakozz, válalj feladatokat a közösségért, és gyűjts krediteket térerő nélkül is!</p>
+            <button class="cta-btn" onclick="enterApp()">Belépés az eMesh-be</button>
+        </section>
+
+        <h2 class="section-title">Mit tud a hálózat?</h2>
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <h3>Radar & Chat</h3>
+                <p>Nincs net? A fákra szerelt átjátszóinkon (LoRa) keresztül üzenhetsz a barátaidnak, és láthatod, melyik hub-hoz csatlakoztak utoljára.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <h3>Feladatkezelő</h3>
+                <p>A fesztivál közös építmény. Böngéssz az aktuális önkéntes feladatok között, oszd be a munkát, és tedd jobbá a tábort!</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                </div>
+                <h3>Kredit Jutalmak</h3>
+                <p>Minden elvégzett feladatért fesztivál-krediteket kapsz a helyi tárcádba. Cseréld be teára, kávéra vagy masszázsra a helyszínen.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>eMesh - A fesztivál hivatalos offline kommunikációs és elszámoló rendszere.</p>
+        </footer>
+    </div>
+
+
+    <!-- ================= APP VIEW ================= -->
+    <div id="app-view">
+        <div class="app-header">
+            <span class="back-to-landing" onclick="exitApp()">← Kilépés</span>
+            <h2>eMesh</h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        </div>
+
+        <div class="tab-nav">
+            <div class="tab-btn" onclick="switchTab('radar')">Radar</div>
+            <div class="tab-btn" onclick="switchTab('chat')">Chat</div>
+            <div class="tab-btn active" onclick="switchTab('tasks')">Feladatok</div>
+        </div>
+
+        <!-- Radar Tab (Mockup) -->
+        <div id="tab-radar" class="tab-content">
+            <h3 style="color: var(--text-main); margin-bottom: 1rem;">Ismerősök a hálózaton</h3>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="color: var(--text-main);">Nagy Bence</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">5 perce • Nagyszínpad Hub</p>
+                </div>
+                <div style="width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary);"></div>
+            </div>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="color: var(--text-main);">Kovács Anna</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">22 perce • Mélyvölgy Kemping</p>
+                </div>
+                <div style="width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary);"></div>
+            </div>
+        </div>
+
+        <!-- Chat Tab (Mockup) -->
+        <div id="tab-chat" class="tab-content">
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message incoming">
+                        Hé, merre vagytok? Mi most értünk vissza a sátorhoz.
+                        <div class="message-status">Bence · 14:22</div>
+                    </div>
+                    <div class="message outgoing">
+                        A Nagyszínpad felé megyünk, gyertek ti is!
+                        <div class="message-status">Kézbesítve ✓ · 14:25</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Írj üzenetet...">
+                    <button class="send-btn" onclick="sendChat()">Küldés</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Manager Tab -->
+        <div id="tab-tasks" class="tab-content active">
+            
+            <div class="credits-display">
+                <p>Elérhető Egyenleg</p>
+                <h2><span id="credit-balance">0</span> <span style="font-size: 1.2rem; color: var(--text-muted);">Kredit</span></h2>
+            </div>
+
+            <h3 class="task-list-title">Vállalt feladataim</h3>
+            <div id="my-tasks-container">
+                <!-- My Tasks will be injected here -->
+            </div>
+
+            <h3 class="task-list-title">Elérhető feladatok</h3>
+            <div id="available-tasks-container">
+                <!-- Available Tasks will be injected here -->
+            </div>
+
+        </div>
+    </div>
+
+    <div id="toast">Értesítés szövege</div>
+
+    <script>
+        // --- App Navigation Logic ---
+        function enterApp() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('app-view').style.display = 'flex';
+            initTaskManager();
+        }
+
+        function exitApp() {
+            document.getElementById('app-view').style.display = 'none';
+            document.getElementById('landing-page').style.display = 'block';
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chat-input');
+            if(!input.value.trim()) return;
+            const container = document.getElementById('chat-messages');
+            container.innerHTML += `<div class="message outgoing">${input.value}<div class="message-status">Kézbesítve ✓ · Most</div></div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // --- TASK MANAGER LOGIC (Vanilla JS + LocalStorage) ---
+
+        // Alapértelmezett fesztivál feladatok
+        const defaultTasks = [
+            { id: 1, title: 'Kábelezés a nagyszínpadnál', desc: 'Segítség kell az aggregátortól a színpadig húzni a kábeleket, hogy ne botoljon el benne senki.', urgency: 'Kritikus', reward: 3000 },
+            { id: 2, title: 'Tűzifa gyűjtés', desc: 'A központi tábortűzhöz kellene hozni száraz rőzsét az északi erdőrészből az esti zenéléshez.', urgency: 'Magas', reward: 1500 },
+            { id: 3, title: 'Szemétszedés a chill sátorban', desc: 'Össze kellene szedni az elhagyott poharakat és szemetet a chill sátor körül.', urgency: 'Normál', reward: 800 },
+            { id: 4, title: 'Víz hordása a konyhára', desc: 'Két kanna ivóvizet kellene hozni a forrástól a központi konyhába a vacsorához.', urgency: 'Magas', reward: 2000 },
+            { id: 5, title: 'Útjelző táblák kihelyezése', desc: 'A sötétben nehezen látható elágazásokhoz kellene kirakni a foszforeszkáló jelzéseket.', urgency: 'Normál', reward: 1000 }
+        ];
+
+        let balance = 0;
+        let availableTasks = [];
+        let myTasks = [];
+
+        function initTaskManager() {
+            // Load state from localStorage or set defaults
+            balance = parseInt(localStorage.getItem('emesh_balance')) || 0;
+            
+            const savedAvailable = localStorage.getItem('emesh_available_tasks');
+            const savedMyTasks = localStorage.getItem('emesh_my_tasks');
+
+            if (savedAvailable) {
+                availableTasks = JSON.parse(savedAvailable);
+            } else {
+                availableTasks = [...defaultTasks];
+            }
+
+            if (savedMyTasks) {
+                myTasks = JSON.parse(savedMyTasks);
+            } else {
+                myTasks = [];
+            }
+
+            updateUI();
+        }
+
+        function saveState() {
+            localStorage.setItem('emesh_balance', balance.toString());
+            localStorage.setItem('emesh_available_tasks', JSON.stringify(availableTasks));
+            localStorage.setItem('emesh_my_tasks', JSON.stringify(myTasks));
+        }
+
+        function getUrgencyClass(urgency) {
+            if (urgency === 'Kritikus') return 'critical';
+            if (urgency === 'Magas') return 'high';
+            return 'normal';
+        }
+
+        function assignTask(taskId) {
+            const taskIndex = availableTasks.findIndex(t => t.id === taskId);
+            if (taskIndex > -1) {
+                const task = availableTasks.splice(taskIndex, 1)[0];
+                myTasks.push(task);
+                saveState();
+                updateUI();
+                showToast(`Feladat elvállalva: ${task.title}`);
+            }
+        }
+
+        function completeTask(taskId) {
+            const taskIndex = myTasks.findIndex(t => t.id === taskId);
+            if (taskIndex > -1) {
+                const task = myTasks.splice(taskIndex, 1)[0];
+                balance += task.reward;
+                saveState();
+                updateUI();
+                showToast(`Kész! +${task.reward} Kredit jóváírva.`);
+            }
+        }
+
+        function dropTask(taskId) {
+            const taskIndex = myTasks.findIndex(t => t.id === taskId);
+            if (taskIndex > -1) {
+                const task = myTasks.splice(taskIndex, 1)[0];
+                availableTasks.push(task); // Visszakerül a közösbe
+                saveState();
+                updateUI();
+                showToast(`Feladat visszaadva.`);
+            }
+        }
+
+        function updateUI() {
+            // Update Balance
+            document.getElementById('credit-balance').innerText = balance.toLocaleString('hu-HU');
+
+            // Render My Tasks
+            const myTasksContainer = document.getElementById('my-tasks-container');
+            if (myTasks.length === 0) {
+                myTasksContainer.innerHTML = '<div class="empty-state">Jelenleg nincs elvállalt feladatod.</div>';
+            } else {
+                myTasksContainer.innerHTML = myTasks.map(task => `
+                    <div class="task-card ${getUrgencyClass(task.urgency)}">
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-reward">+${task.reward}</div>
+                        </div>
+                        <div class="task-desc">${task.desc}</div>
+                        <div class="task-footer">
+                            <span class="task-urgency urgency-${getUrgencyClass(task.urgency)}">${task.urgency}</span>
+                            <div>
+                                <button class="task-btn" onclick="dropTask(${task.id})" style="margin-right: 8px;">Visszaadom</button>
+                                <button class="task-btn complete" onclick="completeTask(${task.id})">Teljesítve</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Available Tasks
+            const availableTasksContainer = document.getElementById('available-tasks-container');
+            if (availableTasks.length === 0) {
+                availableTasksContainer.innerHTML = '<div class="empty-state">Jelenleg nincs új kiosztható feladat.</div>';
+            } else {
+                availableTasksContainer.innerHTML = availableTasks.map(task => `
+                    <div class="task-card ${getUrgencyClass(task.urgency)}">
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-reward">+${task.reward}</div>
+                        </div>
+                        <div class="task-desc">${task.desc}</div>
+                        <div class="task-footer">
+                            <span class="task-urgency urgency-${getUrgencyClass(task.urgency)}">Sürgősség: ${task.urgency}</span>
+                            <button class="task-btn accept" onclick="assignTask(${task.id})">Elvállalom</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+    </script>
+</body>
+</html>
